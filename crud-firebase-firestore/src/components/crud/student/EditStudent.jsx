@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-// import axios from "axios";
+//import axios from "axios";
 //import { students } from './data.js'
-import FirebaseContext from "../../../utils/FirebaseContext";
-import StudentService from "../../../services/StudentService";
 
+import FirebaseContext from "../../../utils/FirebaseContext";
+import FirebaseStudentService from "../../../services/StudentService";
+import RestrictPage from "../../../utils/RestrictPage";
 
 const EditStudentPage = () =>
-    <FirebaseContext.Consumer>
-        {(firebase)=><EditStudent firebase={firebase} />}
-    </FirebaseContext.Consumer>
+<FirebaseContext.Consumer>
+    {
+        (firebase) => {
+            return (
+                <RestrictPage isLogged={firebase.getUser()!=null}>
+                    <EditStudent firebase={firebase}/>
+                </RestrictPage>
+            )
+        }
+    }
+</FirebaseContext.Consumer>
 
 function EditStudent(props) {
 
@@ -36,21 +45,21 @@ function EditStudent(props) {
                     (error) => {
                         console.log(error)
                     }
-                )*/
-            //StudentService.retrieve(
-            StudentService.retrieve_promisse(
-                props.firebase.getFirestoreDb(),
-                (student)=>{
+                )
+            */
+           FirebaseStudentService.retrieve(
+               props.firebase.getFirestoreDb(),
+               (student)=>{
                     setName(student.name)
                     setCourse(student.course)
                     setIRA(student.ira)
-                },
-                params.id
-            )
+               },
+               params.id
+           )
 
         }
         ,
-        [params.id,props]
+        [params.id,props.firebase]
     )
 
     const handleSubmit = (event) => {
@@ -69,14 +78,15 @@ function EditStudent(props) {
                     navigate("/listStudent")
                 }
             )
-            .catch(error => console.log(error))*/
-        StudentService.update(
-            props.firebase.getFirestoreDb(),
-            ()=>{
+            .catch(error => console.log(error))
+        */
+       FirebaseStudentService.update(
+           props.firebase.getFirestoreDb(),
+           ()=>{
                 navigate("/listStudent")
-            },
-            params.id,
-            updatedStudent)
+           },
+           params.id,
+           updatedStudent)
     }
 
     return (

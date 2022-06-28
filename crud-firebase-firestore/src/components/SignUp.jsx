@@ -6,27 +6,52 @@ import FirebaseUserService from "../services/FirebaseUserService";
 import FirebaseContext from "../utils/FirebaseContext";
 import MyToast from "../utils/MyToast";
 
-const HomePage = (props) =>
+const SignUpPage = (props) =>
     <FirebaseContext.Consumer>
-        {(firebase) => <Home firebase={firebase} setLogged={props.setLogged} />}
+        {(firebase) => <SignUp firebase={firebase} setLogged={props.setLogged} />}
     </FirebaseContext.Consumer>
 
-function Home(props) {
+function SignUp(props) {
 
     const [login, setLogin] = useState('')
     const [password, setPassword] = useState('')
+    const [repassword, setRepassword] = useState('')
     const [loading, setLoading] = useState(false)
-    const [showToast, setShowToast] = useState(false);
 
+    const [showToast, setShowToast] = useState(false);
+    const [toast, setToast] = useState({header:'',body:''})
 
     const navigate = useNavigate()
 
     const handleSubmit = (event) => {
         event.preventDefault()
         setLoading(true)
-        //console.log(login)
-        //console.log(password)
-        FirebaseUserService.login(
+        if(password!==repassword){
+            setToast({header:'Erro!',body:'Repita a mesmo senha!'})
+            setShowToast(true)
+            setLoading(false)
+            return
+        }
+        FirebaseUserService.signup(
+            props.firebase.getAuthentication(),
+            login,
+            password,
+            (user) => {
+                if (user != null) {
+                    //console.log(user.email)
+                    setLoading(false)
+                    props.firebase.setUser(user)
+                    props.setLogged(true)
+                    navigate('/listStudent')
+                } else {
+                    //alert('Usuário e/ou senha incorretos!')
+                    setToast({header:'Erro!',body:'Erro desconhecido.'})
+                    setShowToast(true)
+                    setLoading(false)
+                }
+            }
+        )
+        /*FirebaseUserService.login(
             props.firebase.getAuthentication(),
             login,
             password,
@@ -43,7 +68,7 @@ function Home(props) {
                     setShowToast(true)
                 }
             }
-        )
+        )*/
     }
 
     const renderSubmitButton = () => {
@@ -60,39 +85,27 @@ function Home(props) {
         return (
             <>
                 <div className="form-group" style={{ paddingTop: 20 }}>
-                    <input type="submit" value="Efetuar Login" className="btn btn-primary" />
+                    <input type="submit" value="Efetuar Cadastro" className="btn btn-primary" />
                 </div>
             </>
         )
     }
 
     const renderToast = () => {
-
         return <MyToast
             show={showToast}
-            header='Erro!'
-            body='Login e/ou Senha incorreto(s).'
+            header={toast.header}
+            body={toast.body}
             setShowToast={setShowToast}
-            bg='primary'
+            bg='secondary'
         />
-
-        /*return (
-            <ToastContainer position="top-center" style={{marginTop:10}}>
-                <Toast onClose={() => setShow(false)} show={show} delay={5000} autohide>
-                    <Toast.Header>
-                        <strong className="me-auto">Erro!</strong>
-                    </Toast.Header>
-                    <Toast.Body>Login e/ou Senha incorreto(s).</Toast.Body>
-                </Toast>
-            </ToastContainer>
-        )*/
     }
 
     return (
         <div className="content-login" style={{ marginTop: 50 }}>
             {renderToast()}
             <main style={{ width: '40%' }}>
-                <h2>Login</h2>
+                <h2>Cadastre-se</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label>Login: </label>
@@ -110,12 +123,17 @@ function Home(props) {
                             name="password"
                             onChange={(event) => { setPassword(event.target.value) }} />
                     </div>
+                    <div className="form-group">
+                        <label>Repita a Senha: </label>
+                        <input type="repassword"
+                            className="form-control"
+                            value={repassword ?? ""}
+                            name="repassword"
+                            onChange={(event) => { setRepassword(event.target.value) }} />
+                    </div>
                     {renderSubmitButton()}
                 </form>
             </main>
-            <nav>
-                <Link to="/signup">Cadastre-se</Link>
-            </nav>
             <nav>
                 <Link to="/about">About</Link>
             </nav>
@@ -123,4 +141,4 @@ function Home(props) {
     );
 }
 
-export default HomePage
+export default SignUpPage

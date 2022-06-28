@@ -4,10 +4,19 @@ import { Link, useNavigate } from "react-router-dom";
 
 import FirebaseContext from "../../../utils/FirebaseContext";
 import ProfessorService from "../../../services/ProfessorService";
+import RestrictPage from "../../../utils/RestrictPage";
 
 const CreateProfessorPage  = () => 
 <FirebaseContext.Consumer>
-    {(firebase) => <CreateProfessor firebase={firebase} />}
+    {
+        (firebase) => {
+            return (
+                <RestrictPage isLogged={firebase.getUser()!=null}>
+                    <CreateProfessor firebase={firebase} />
+                </RestrictPage>
+            )
+        }
+    }
 </FirebaseContext.Consumer>
 
 function CreateProfessor(props) {
@@ -35,9 +44,9 @@ function CreateProfessor(props) {
             },
             newProfessor)
  
-         console.log(name)
-         console.log(university)
-         console.log(degree)
+        //  console.log(name)
+        //  console.log(university)
+        //  console.log(degree)
     }
 
     return (

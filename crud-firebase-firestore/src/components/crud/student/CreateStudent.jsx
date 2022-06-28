@@ -1,26 +1,35 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// import axios from "axios";
+//import axios from "axios";
 
 import FirebaseContext from "../../../utils/FirebaseContext";
-import StudentService from "../../../services/StudentService";
+import FirebaseStudentService from "../../../services/StudentService";
+import RestrictPage from "../../../utils/RestrictPage";
 
-const CreateStudentPage = () => 
-    <FirebaseContext.Consumer>
-        {(firebase) => <CreateStudent firebase={firebase} />}
-    </FirebaseContext.Consumer>
+const CreateStudentPage = () =>
+<FirebaseContext.Consumer>
+    {
+        (firebase) => {
+            return (
+                <RestrictPage isLogged={firebase.getUser()!=null}>
+                    <CreateStudent firebase={firebase}/>
+                </RestrictPage>
+            )
+        }
+    }
+</FirebaseContext.Consumer>
 
 function CreateStudent(props) {
 
     const [name, setName] = useState("")
     const [course, setCourse] = useState("")
-    const [IRA, setIRA] = useState(0)
+    const [ira, setIRA] = useState(0)
     const navigate = useNavigate()
 
     const handleSubmit = (event) => {
         event.preventDefault()
 
-        const newStudent = { name, course, IRA }
+        const newStudent = { name, course, ira }
         //axios.post('http://localhost:3001/students', newStudent)
         /*axios.post('http://localhost:3002/crud/students/create', newStudent)
             .then(
@@ -36,16 +45,16 @@ function CreateStudent(props) {
                 }
             )
         */
-       StudentService.create( 
+       FirebaseStudentService.create(
            props.firebase.getFirestoreDb(),
            ()=>{
+            alert(`Aluno ${name} criado com sucesso.`)
             navigate("/listStudent")
            },
-           newStudent)
-        alert(`Aluno ${name} criado com sucesso.`)
-        console.log(name)
-        console.log(course)
-        console.log(IRA)
+           newStudent
+       )
+
+        
     }
 
     return (
@@ -75,8 +84,8 @@ function CreateStudent(props) {
                         <label>IRA: </label>
                         <input type="text"
                             className="form-control"
-                            value={IRA ?? 0}
-                            name="IRA"
+                            value={ira ?? 0}
+                            name="ira"
                             onChange={(event) => { setIRA(event.target.value) }} />
                     </div>
                     <div className="form-group" style={{ paddingTop: 20 }}>

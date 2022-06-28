@@ -6,11 +6,18 @@ import ProfessorTableRow from "./ProfessorTableRow";
 
 import FirebaseContext from "../../../utils/FirebaseContext";
 import ProfessorService from "../../../services/ProfessorService";
+import RestrictPage from "../../../utils/RestrictPage";
 
 
 const ListProfessorPage = () => 
     <FirebaseContext.Consumer>
-    {(firebase) => <ListProfessor firebase={firebase} />}
+        {
+            (firebase) => {   
+                <RestrictPage isLogged={firebase.getUser() != null}>
+                    <ListProfessor firebase={firebase} />
+                </RestrictPage>
+            }   
+        }
     </FirebaseContext.Consumer>
 
 

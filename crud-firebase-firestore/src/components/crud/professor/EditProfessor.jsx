@@ -4,11 +4,20 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 
 import FirebaseContext from "../../../utils/FirebaseContext";
 import ProfessorService from "../../../services/ProfessorService";
+import RestrictPage from "../../../utils/RestrictPage";
 
 const EditProfessorPage = () => 
-    <FirebaseContext.Consumer>
-    {(firebase)=><EditProfessor firebase={firebase} />}
-    </FirebaseContext.Consumer>
+<FirebaseContext.Consumer>
+    {
+        (firebase) => {
+            return (
+                <RestrictPage isLogged={firebase.getUser()!=null}>
+                    <EditProfessor firebase={firebase} />
+                </RestrictPage>
+            )
+        }
+    }
+</FirebaseContext.Consumer>
 
 function EditProfessor(props) {
 
@@ -88,7 +97,7 @@ function EditProfessor(props) {
                         <label>Titulação: </label>
                         <input type="text"
                             className="form-control"
-                            value={degree ?? 0}
+                            value={degree ?? "  "}
                             name="degree"
                             onChange={(event) => { setDegree(event.target.value) }} />
                     </div>

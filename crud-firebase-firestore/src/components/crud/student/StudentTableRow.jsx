@@ -1,8 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-// import axios from "axios";
-
-import StudentService from "../../../services/StudentService";
+//import axios from "axios";
+import FirebaseStudentService from "../../../services/StudentService";
 
 const StudentTableRow = (props) => {
     const {_id,name,course,ira} = props.student
@@ -13,11 +12,12 @@ const StudentTableRow = (props) => {
             /*axios.delete(`http://localhost:3002/crud/students/delete/${_id}`)
                 .then(response => props.deleteStudentById(_id))
                 .catch(error => console.log(error))*/
-            StudentService.delete(
-                props.firestoreDb,
-                ()=>{},
-                _id
-            )
+            FirebaseStudentService.delete(
+                props.firestore,
+                ()=>{
+                    alert('Estudante ' + _id + ' apagado com sucesso!')
+                },
+                _id)
 
         }
     }
