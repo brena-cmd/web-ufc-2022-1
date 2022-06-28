@@ -59,7 +59,23 @@ function ListProfessor(props) {
     }
 
     function generateTable() {
-
+        if (loading) {
+            //mostrar um spinner!
+            return (
+                <div style={{
+                    display:'flex',
+                    flexDirection:'column',
+                    justifyContent:'center',
+                    alignItems:'center',
+                    padding:100
+                }}>
+                    <div className="spinner-border" 
+                     style={{width: '3rem', height: '3rem'}} 
+                     role="status" />
+                     Carregando...
+                </div>
+            )
+        }
         if (!professors) return
         return professors.map(
             (professor, i) => {
